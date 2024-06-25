@@ -30,7 +30,7 @@
   failed_when: "'remote-add' in result.stderr"
 
 - name: Check if Pika Backup is already installed
-  ansible.builtin.command: flatpak list | grep org.gnome.World.PikaBackup
+  ansible.builtin.shell: flatpak list | grep org.gnome.World.PikaBackup
   register: pika_installed
   ignore_errors: true
 
