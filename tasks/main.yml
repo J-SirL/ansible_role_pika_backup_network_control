@@ -14,37 +14,37 @@
     mode: '0666'
 
 - name: Ensure the pre-backup script is present
-  copy:
-    src: pre_backup.sh
+  ansible.builtin.template:
+    src: pre_backup.sh.j2
     dest: "{{ pre_backup_script_location }}"
     mode: '0755'
 
 - name: Install Flatpak
-  dnf:
+  ansible.builtin.dnf:
     name: flatpak
     state: present
 
 - name: Add Flathub repository
-  command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  ansible.builtin.command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
   register: result
   failed_when: "'remote-add' in result.stderr"
 
 - name: Check if Pika Backup is already installed
-  command: flatpak list | grep org.gnome.World.PikaBackup
+  ansible.builtin.command: flatpak list | grep org.gnome.World.PikaBackup
   register: pika_installed
   ignore_errors: true
 
 - name: Install Pika Backup
-  command: flatpak install -y flathub org.gnome.World.PikaBackup
+  ansible.builtin.command: flatpak install -y flathub org.gnome.World.PikaBackup
   when: pika_installed.rc != 0
 
 - name: Ensure the Pika Backup service override directory exists
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/pika-backup.service.d
     state: directory
 
 - name: Configure Pika Backup to use pre-backup script
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/pika-backup.service.d/override.conf
     content: |
       [Service]
