@@ -1,7 +1,7 @@
 # meta/main.yml
 galaxy_info:
   author: Johan Sörell
-  description: Role to control Pika Backup based on network location
+  description: Role to Install Pika Backup from flatpack and configure to run based on network location
   license: MIT
   min_ansible_version: '2.9'
 

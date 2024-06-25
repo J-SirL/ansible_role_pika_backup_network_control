@@ -16,7 +16,7 @@
 - name: Ensure the pre-backup script is present
   copy:
     src: pre_backup.sh
-    dest: /usr/local/bin/pre_backup.sh
+    dest: "{{ pre_backup_script_location }}"
     mode: '0755'
 
 - name: Install Flatpak
@@ -48,5 +48,5 @@
     dest: /etc/systemd/system/pika-backup.service.d/override.conf
     content: |
       [Service]
-      ExecStartPre=/usr/local/bin/pre_backup.sh
+      ExecStartPre="{{ pre_backup_script_location }}"
   notify: reload systemd
