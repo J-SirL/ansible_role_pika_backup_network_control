@@ -1,0 +1,4 @@
+# defaults/main.yml
+home_ip_prefix: "192.168.68"
+office_ip_prefix: "10.0.0"
+log_file: "/var/log/pika_backup.log"

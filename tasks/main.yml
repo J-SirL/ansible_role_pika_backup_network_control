@@ -1,0 +1,47 @@
+# tasks/main.yml
+
+- name: Ensure /usr/local/bin directory exists
+  ansible.builtin.file:
+    path: /usr/local/bin
+    state: directory
+    mode: '0755'
+
+- name: Upload network check script
+  ansible.builtin.copy:
+    src: check_network_and_stop_backup.sh
+    dest: /usr/local/bin/check_network_and_stop_backup.sh
+    mode: '0755'
+
+- name: Ensure /etc/systemd/system directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system
+    state: directory
+    mode: '0755'
+
+- name: Upload systemd service file for network check
+  ansible.builtin.copy:
+    src: check_network_and_stop_backup.service
+    dest: /etc/systemd/system/check_network_and_stop_backup.service
+    mode: '0644'
+
+- name: Upload systemd timer file for network check
+  ansible.builtin.copy:
+    src: check_network_and_stop_backup.timer
+    dest: /etc/systemd/system/check_network_and_stop_backup.timer
+    mode: '0644'
+
+- name: Reload systemd to apply changes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable and start network check service
+  ansible.builtin.systemd:
+    name: check_network_and_stop_backup.service
+    enabled: yes
+    state: started
+
+- name: Enable and start network check timer
+  ansible.builtin.systemd:
+    name: check_network_and_stop_backup.timer
+    enabled: yes
+    state: started
