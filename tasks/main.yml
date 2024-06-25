@@ -7,7 +7,7 @@
     state: directory
     mode: '0755'
 
-- name: Ensure /var/log/nas_mount.log exists and has correct permissions
+- name: Ensure {{ log_file }} exists and has correct permissions
   ansible.builtin.file:
     path: "{{ log_file }}"
     state: touch
