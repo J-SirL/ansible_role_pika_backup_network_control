@@ -9,7 +9,7 @@
 
 - name: Ensure {{ pika_log_file }} exists and has correct permissions
   ansible.builtin.file:
-    path: "{{ log_file }}"
+    path: "{{ pika_log_file }}"
     state: touch
     mode: '0666'
 
