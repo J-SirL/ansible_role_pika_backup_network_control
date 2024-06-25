@@ -3,12 +3,18 @@
 # Define the home network IP prefix
 HOME_NETWORK_PREFIX="192.168.68."
 
+# Log file
+LOG_FILE="/var/log/pika_backup.log"
+
 # Get the current IP address of the system
 CURRENT_IP=$(hostname -I | awk '{print $1}')
 
+# Log the current IP address
+echo "$(date): Current IP address is $CURRENT_IP" >> $LOG_FILE
+
 # Check if the current IP matches the home network prefix
 if [[ $CURRENT_IP == $HOME_NETWORK_PREFIX* ]]; then
-  echo "Connected to home network. Proceeding with pre-backup tasks..."
+  echo "$(date): Connected to home network. Proceeding with pre-backup tasks..." >> $LOG_FILE
 
 #  # Example: Stop a service
 #  sudo systemctl stop myservice
@@ -18,6 +24,6 @@ if [[ $CURRENT_IP == $HOME_NETWORK_PREFIX* ]]; then
 
   echo "Pre-backup tasks completed."
 else
-  echo "Not connected to home network. Skipping pre-backup tasks."
+  echo "$(date): Not connected to home network. Skipping pre-backup tasks." >> $LOG_FILE
   exit 1
 fi

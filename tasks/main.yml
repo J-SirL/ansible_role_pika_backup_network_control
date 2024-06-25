@@ -1,4 +1,18 @@
 ---
+
+# Ensure the log directory and file exists
+- name: Ensure /var/log directory exists
+  ansible.builtin.file:
+    path: /var/log
+    state: directory
+    mode: '0755'
+
+- name: Ensure /var/log/nas_mount.log exists and has correct permissions
+  ansible.builtin.file:
+    path: "{{ log_file }}"
+    state: touch
+    mode: '0666'
+
 - name: Ensure the pre-backup script is present
   copy:
     src: pre_backup.sh
