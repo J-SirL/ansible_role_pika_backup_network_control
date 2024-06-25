@@ -1,47 +1,38 @@
-# tasks/main.yml
+---
+- name: Ensure the pre-backup script is present
+  copy:
+    src: pre_backup.sh
+    dest: /usr/local/bin/pre_backup.sh
+    mode: '0755'
 
-- name: Ensure /usr/local/bin directory exists
-  ansible.builtin.file:
-    path: /usr/local/bin
+- name: Install Flatpak
+  dnf:
+    name: flatpak
+    state: present
+
+- name: Add Flathub repository
+  command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  register: result
+  failed_when: "'remote-add' in result.stderr"
+
+- name: Check if Pika Backup is already installed
+  command: flatpak list | grep org.gnome.World.PikaBackup
+  register: pika_installed
+  ignore_errors: true
+
+- name: Install Pika Backup
+  command: flatpak install -y flathub org.gnome.World.PikaBackup
+  when: pika_installed.rc != 0
+
+- name: Ensure the Pika Backup service override directory exists
+  file:
+    path: /etc/systemd/system/pika-backup.service.d
     state: directory
-    mode: '0755'
 
-- name: Upload network check script
-  ansible.builtin.copy:
-    src: check_network_and_stop_backup.sh
-    dest: /usr/local/bin/check_network_and_stop_backup.sh
-    mode: '0755'
-
-- name: Ensure /etc/systemd/system directory exists
-  ansible.builtin.file:
-    path: /etc/systemd/system
-    state: directory
-    mode: '0755'
-
-- name: Upload systemd service file for network check
-  ansible.builtin.copy:
-    src: check_network_and_stop_backup.service
-    dest: /etc/systemd/system/check_network_and_stop_backup.service
-    mode: '0644'
-
-- name: Upload systemd timer file for network check
-  ansible.builtin.copy:
-    src: check_network_and_stop_backup.timer
-    dest: /etc/systemd/system/check_network_and_stop_backup.timer
-    mode: '0644'
-
-- name: Reload systemd to apply changes
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: Enable and start network check service
-  ansible.builtin.systemd:
-    name: check_network_and_stop_backup.service
-    enabled: yes
-    state: started
-
-- name: Enable and start network check timer
-  ansible.builtin.systemd:
-    name: check_network_and_stop_backup.timer
-    enabled: yes
-    state: started
+- name: Configure Pika Backup to use pre-backup script
+  copy:
+    dest: /etc/systemd/system/pika-backup.service.d/override.conf
+    content: |
+      [Service]
+      ExecStartPre=/usr/local/bin/pre_backup.sh
+  notify: reload systemd
