@@ -25,5 +25,6 @@ if [[ $CURRENT_IP == $HOME_NETWORK_PREFIX* ]]; then
   echo "Pre-backup tasks completed."
 else
   echo "$(date): Not connected to home network. Skipping pre-backup tasks." >> $LOG_FILE
+  echo "Not connected to home office, exiting!"
   exit 1
 fi
